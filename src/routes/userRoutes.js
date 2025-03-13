@@ -5,6 +5,7 @@ import { create, getAllUsers, getUserById } from "../controllers/user.js";
 
 const router = express.Router();
 
+//ROLE CHECK WELCOME ROUTES
 router.get("/admin", verifyToken, authorizeRoles("admin"), (req, res) => {
   res.json({ message: "Welcome Admin" });
 });
