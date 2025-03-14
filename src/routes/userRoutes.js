@@ -1,7 +1,12 @@
 import express from "express";
 import { authorizeRoles } from "../middlewares/roleMiddleware.js";
 import { verifyToken } from "../middlewares/authMiddleware.js";
-import { create, getAllUsers, getUserById } from "../controllers/user.js";
+import {
+  create,
+  getAllUsers,
+  getUserById,
+  addProfile,
+} from "../controllers/user.js";
 
 const router = express.Router();
 
@@ -31,5 +36,14 @@ router.get("/", verifyToken, authorizeRoles("admin"), getAllUsers);
 router.get("/:id", verifyToken, authorizeRoles("admin"), getUserById);
 
 router.post("/create", verifyToken, authorizeRoles("admin"), create);
+
+//ADMIN,DEV,USER
+
+router.post(
+  "/profile",
+  verifyToken,
+  authorizeRoles("admin", "developer", "user"),
+  addProfile
+);
 
 export default router;

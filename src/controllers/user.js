@@ -1,3 +1,4 @@
+import UserProfile from "../models/userprofile.js";
 import User from "../models/users.js";
 import bcrypt from "bcryptjs";
 export const getAllUsers = async (req, res) => {
@@ -55,6 +56,27 @@ export const create = async (req, res) => {
     }
   } catch (error) {
     console.error("Error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export const addProfile = async (req, res) => {
+  try {
+    const { profile_pic_url, dob, bio } = req.body;
+    const id = req.user.userID;
+    const userprofile = new UserProfile({
+      user_id: id,
+      profile_pic_url,
+      dob,
+      bio,
+    });
+    await userprofile.save();
+    return res.status(201).json({
+      profile_pic_url,
+      dob,
+      bio,
+    });
+  } catch (error) {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
