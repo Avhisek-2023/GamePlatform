@@ -15,6 +15,15 @@ const userProfileSchema = mongoose.Schema(
     dob: {
       type: Date,
     },
+    phone_no: {
+      type: String,
+    },
+    skills: {
+      type: String,
+    },
+    address: {
+      type: String,
+    },
   },
   {
     timestamps: true,
