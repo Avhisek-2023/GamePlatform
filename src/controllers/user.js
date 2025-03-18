@@ -60,23 +60,21 @@ export const create = async (req, res) => {
   }
 };
 
-export const addProfile = async (req, res) => {
+export const getDetails = async (req, res) => {
   try {
-    const { profile_pic_url, dob, bio } = req.body;
-    const id = req.user.userID;
-    const userprofile = new UserProfile({
-      user_id: id,
-      profile_pic_url,
-      dob,
-      bio,
-    });
-    await userprofile.save();
-    return res.status(201).json({
-      profile_pic_url,
-      dob,
-      bio,
-    });
+    const user_id = req.user.userID;
+    const userDetails = await UserProfile.findOne({ user_id });
+    if (userDetails) {
+      return res.status(200).json({ data: userDetails });
+    } else {
+      return res.status(400).json({ message: "No Details Found" });
+    }
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ message: error });
   }
+};
+
+export const updateProfile = async (req, res) => {
+  const user_id = req.params.id;
+  console.log(user_id);
 };
