@@ -1,3 +1,4 @@
+import UserProfile from "../models/userprofile.js";
 import User from "../models/users.js";
 import bcrypt from "bcryptjs";
 export const getAllUsers = async (req, res) => {
@@ -57,4 +58,23 @@ export const create = async (req, res) => {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal Server Error" });
   }
+};
+
+export const getDetails = async (req, res) => {
+  try {
+    const user_id = req.user.userID;
+    const userDetails = await UserProfile.findOne({ user_id });
+    if (userDetails) {
+      return res.status(200).json({ data: userDetails });
+    } else {
+      return res.status(400).json({ message: "No Details Found" });
+    }
+  } catch (error) {
+    return res.status(500).json({ message: error });
+  }
+};
+
+export const updateProfile = async (req, res) => {
+  const user_id = req.params.id;
+  console.log(user_id);
 };

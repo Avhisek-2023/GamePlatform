@@ -1,4 +1,4 @@
 node_modules
 .history
 .env
-public/*
+src/swagger.js
