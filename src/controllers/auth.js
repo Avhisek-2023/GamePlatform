@@ -5,6 +5,7 @@ import UserProfile from "../models/userprofile.js";
 import nodemailer from "nodemailer";
 import jwt from "jsonwebtoken";
 import randomstring from "randomstring";
+import { Response } from "../CustomResponse/Response.js";
 // import { sendResetPasswordEmail } from "../lib/emailService.js";
 export const register = async (req, res) => {
   const { name, email, password, role } = req.body;
@@ -38,12 +39,12 @@ export const register = async (req, res) => {
         role: role,
       });
       await newProfile.save();
-      res.status(201).json({
-        data: {
-          access_token: access_token,
-          refresh_token: refresh_token,
-        },
-      });
+      return new Response(
+        true,
+        "Logged In Successfully",
+        { access_token, refresh_token },
+        null
+      );
     } else {
       res.status(400).json({ message: "Invalid User data" });
     }
@@ -61,12 +62,13 @@ export const login = async (req, res) => {
     if (!isPasswordCorrect)
       res.status(400).json({ message: "Invalid Credentials" });
     const { access_token, refresh_token } = generateToken(user._id, res);
-    res.status(201).json({
-      data: {
-        access_token: access_token,
-        refresh_token: refresh_token,
-      },
-    });
+    return new Response(
+      res,
+      true,
+      "Logged In Successfully",
+      { access_token, refresh_token },
+      null
+    ).successs();
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal Server Error" });
