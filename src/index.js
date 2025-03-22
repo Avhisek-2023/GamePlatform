@@ -4,10 +4,15 @@ import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import uploadRoutes from "./routes/projectRoutes.js"
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "./swagger-output.json" with { type: "json" };
 
 dotenv.config();
 
 const app = express();
+
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 const PORT = process.env.PORT;
 const DB_URL = process.env.DB_URL;
@@ -15,8 +20,9 @@ const DB_URL = process.env.DB_URL;
 app.use(express.json());
 app.use(cookieParser());
 
-app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
+app.use("/api", authRoutes);
+app.use("/api", userRoutes);
+app.use("/api",uploadRoutes)
 
 mongoose
   .connect(DB_URL)

@@ -1,8 +1,11 @@
 import bcrypt from "bcryptjs";
 import { generateToken } from "../lib/jwtService.js";
 import User from "../models/users.js";
+import UserProfile from "../models/userprofile.js";
 import nodemailer from "nodemailer";
+import jwt from "jsonwebtoken";
 import randomstring from "randomstring";
+import { Response } from "../CustomResponse/Response.js";
 // import { sendResetPasswordEmail } from "../lib/emailService.js";
 export const register = async (req, res) => {
   const { name, email, password, role } = req.body;
@@ -26,14 +29,22 @@ export const register = async (req, res) => {
     });
 
     if (newUser) {
-      generateToken(newUser._id, res);
-      await newUser.save();
-      res.status(201).json({
-        _id: newUser._id,
-        name: newUser.name,
-        email: newUser.email,
-        role: newUser.role,
+      const { access_token, refresh_token } = generateToken(newUser._id, res);
+      const user = await newUser.save();
+      // console.log(user);
+      const newProfile = new UserProfile({
+        user_id: user._id,
+        name: name,
+        email: email,
+        role: role,
       });
+      await newProfile.save();
+      return new Response(
+        true,
+        "Logged In Successfully",
+        { access_token, refresh_token },
+        null
+      );
     } else {
       res.status(400).json({ message: "Invalid User data" });
     }
@@ -50,13 +61,14 @@ export const login = async (req, res) => {
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect)
       res.status(400).json({ message: "Invalid Credentials" });
-    generateToken(user._id, res);
-    res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    });
+    const { access_token, refresh_token } = generateToken(user._id, res);
+    return new Response(
+      res,
+      true,
+      "Logged In Successfully",
+      { access_token, refresh_token },
+      null
+    ).successs();
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -66,6 +78,8 @@ export const login = async (req, res) => {
 export const logout = (req, res) => {
   try {
     res.cookie("jwt", "", { maxAge: 0 });
+    res.cookie("access_token", "", { maxAge: 0 });
+    res.cookie("refresh_token", "", { maxAge: 0 });
     res.status(200).json({ message: "Logout Successfully" });
   } catch (error) {
     res.status(400).json({ message: error });
@@ -133,18 +147,40 @@ export const reset_password = async (req, res) => {
       const password = req.body.password;
       const salt = await bcrypt.genSalt(10);
       const hashedPassword = await bcrypt.hash(password, salt);
-      const updatedUserData = await User.findByIdAndUpdate(
+      await User.findByIdAndUpdate(
         {
           _id: userData._id,
         },
         { $set: { password: hashedPassword, token: "" } },
         { new: true }
       );
-      return res.status(200).json({ data: updatedUserData });
+      const access_token = generateToken(userData._id, res);
+      return res.status(200).json({ access_token: access_token });
     } else {
       return res.status(400).json({ msg: "This link has been expired" });
     }
   } catch (error) {
-    return res.status(400).json({ msg: error });
+    return res.status(500).json({ msg: error });
+  }
+};
+
+export const refreshToken = async (req, res) => {
+  try {
+    const { refresh_token } = req.body;
+    const decode = jwt.verify(refresh_token, process.env.JWT_REFRESH_SECRET);
+    const user = await User.findById(decode.userID);
+    if (user) {
+      const { access_token, refresh_token } = generateToken(user._id, res);
+      res.status(201).json({
+        data: {
+          access_token: access_token,
+          refresh_token: refresh_token,
+        },
+      });
+    } else {
+      return res.status(400).json({ message: "RefreshToken Expired" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
