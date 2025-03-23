@@ -22,6 +22,13 @@ const PORT = process.env.PORT;
 const DB_URL = process.env.DB_URL;
 
 app.use(cors());
+
+app.get('/',(req,res)=>{
+  return res.status(200).json({
+    message:"accounts"
+  })
+});
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -34,15 +41,16 @@ app.get('/',(req,res)=>{
 });
 
 
-app.use("/api", authRoutes);
-app.use("/api", userRoutes);
-
 app.listen(PORT, () => {
   console.log(`Server running on PORT ${PORT}`);
 });
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api",uploadRoutes)
+
+app.listen(PORT, () => {
+  console.log(`Server running on PORT ${PORT}`);
+});
 
 mongoose
   .connect(DB_URL)
