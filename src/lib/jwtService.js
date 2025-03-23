@@ -1,9 +1,18 @@
+import { configDotenv } from "dotenv";
 import jwt from "jsonwebtoken";
+
+
+configDotenv();
+
+console.log(process.env.JWT_SECRET,"secret");
+
 
 export const generateToken = (userID, res) => {
   const access_token = jwt.sign({ userID }, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
+
+  console.log(`accessToken: ${access_token}`);
   const refresh_token = jwt.sign({ userID }, process.env.JWT_REFRESH_SECRET, {
     expiresIn: "7d",
   });
