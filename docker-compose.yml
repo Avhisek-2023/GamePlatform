@@ -2,7 +2,7 @@
 
 services:
   mongo_db:
-    container_name: db_container
+    container_name: mongo_db_container
     image: mongo:4.4
     restart: always
     volumes:
