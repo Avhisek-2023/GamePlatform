@@ -31,6 +31,8 @@ app.get('/',(req,res)=>{
   })
 });
 
+app.use(express.json());
+app.use(cookieParser());
 
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
