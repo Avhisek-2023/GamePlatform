@@ -36,6 +36,7 @@ export const create = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    console.log(`request ${req.body}`);
     const newUser = new User({
       name,
       email,
@@ -43,20 +44,21 @@ export const create = async (req, res) => {
       role,
     });
 
+    console.log(newUser,'new user');
+
     if (newUser) {
       await newUser.save();
-      res.status(201).json({
+      return res.status(201).json({
         _id: newUser._id,
         name: newUser.name,
         email: newUser.email,
         role: newUser.role,
       });
     } else {
-      res.status(400).json({ message: "Invalid User data" });
+      return  res.status(400).json({ message: "Invalid User data" });
     }
   } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 

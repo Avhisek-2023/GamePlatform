@@ -4,15 +4,10 @@ import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
-import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "./swagger-output.json" with { type: "json" };
-import cors from "cors";
-import User from "./models/users.js";
 import uploadRoutes from "./routes/projectRoutes.js"
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger-output.json" with { type: "json" };
 import cors from "cors";
-import User from "./models/users.js";
 
 dotenv.config();
 
@@ -38,15 +33,6 @@ app.get('/',(req,res)=>{
 });
 
 
-
-
-app.get('/',(req,res)=>{
-  return res.status(200).json({
-    message:"accounts"
-  })
-});
-
-
 app.listen(PORT, () => {
   console.log(`Server running on PORT ${PORT}`);
 });
@@ -54,9 +40,6 @@ app.use("/api", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api",uploadRoutes)
 
-app.listen(PORT, () => {
-  console.log(`Server running on PORT ${PORT}`);
-});
 
 mongoose
   .connect(DB_URL)

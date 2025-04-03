@@ -16,7 +16,11 @@ export const register = async (req, res) => {
         .json({ message: "Password must be atleast 6 chatracters" });
     }
     const user = await User.findOne({ email });
-    if (user) return res.status(400).json({ message: "User already exists" });
+    if (user) return res.status(200).json({ 
+      success: true,
+      status: 304,
+      message: "User already exists" 
+    });
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -39,36 +43,53 @@ export const register = async (req, res) => {
         role: role,
       });
       await newProfile.save();
-      return new Response(
-        true,
-        "Logged In Successfully",
-        { access_token, refresh_token },
-        null
-      );
+      return  res.status(201).json({
+        success: true,
+        status: 201,
+        message: "Registration successfull",
+        data:{
+          accessToken: access_token,
+          refreshToken: refresh_token
+        }
+      });
     } else {
-      res.status(400).json({ message: "Invalid User data" });
+      return res.status(400).json({ 
+        success: false,
+        status: 400,
+        message:"Registration failed",
+      });
     }
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    return res.status(500).json({ message: "Internal Server Error" });
   }
 };
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
-    if (!user) res.status(400).json({ message: "Invalid Credentials" });
+    if (!user) res.status(401).json({ 
+      success: true,
+      status: 401,
+      message: "Invalid Credentials"
+    });
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect)
-      res.status(400).json({ message: "Invalid Credentials" });
+      return res.status(401).json({
+      success: true,
+      status: 401,
+      message: "Invalid Credentials"
+    });
     const { access_token, refresh_token } = generateToken(user._id, res);
-    return new Response(
-      res,
-      true,
-      "Logged In Successfully",
-      { access_token, refresh_token },
-      null
-    ).successs();
+    return res.status(200).json({
+      success: true,
+      status: 200,
+      message: "Login successfull",
+      data:{
+        accessToken: access_token,
+        refreshToken: refresh_token
+      }
+    });
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -80,9 +101,13 @@ export const logout = (req, res) => {
     res.cookie("jwt", "", { maxAge: 0 });
     res.cookie("access_token", "", { maxAge: 0 });
     res.cookie("refresh_token", "", { maxAge: 0 });
-    res.status(200).json({ message: "Logout Successfully" });
+    return res.status(200).json({ 
+      success: true,
+      status: 200,
+      message: "Logout successfull"
+     });
   } catch (error) {
-    res.status(400).json({ message: error });
+    return res.status(400).json({ message: error });
   }
 };
 const sendResetPasswordEmail = async (name, email, token) => {
