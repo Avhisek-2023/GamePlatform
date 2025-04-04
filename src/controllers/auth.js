@@ -11,16 +11,25 @@ export const register = async (req, res) => {
   const { name, email, password, role } = req.body;
   try {
     if (password.length < 6) {
-      return res
-        .status(400)
-        .json({ message: "Password must be atleast 6 chatracters" });
+      return new Response(
+        res,
+        false,
+        400,
+
+        "Password must be atleast 6 chatracters",
+        // error
+      ).errorFun();
+
     }
     const user = await User.findOne({ email });
-    if (user) return res.status(200).json({ 
-      success: true,
-      status: 304,
-      message: "User already exists" 
-    });
+    if (user) return new Response(
+      res,
+      true,
+      304,
+      "User already exists",
+      // error
+    ).errorFun();
+
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
@@ -35,7 +44,6 @@ export const register = async (req, res) => {
     if (newUser) {
       const { access_token, refresh_token } = generateToken(newUser._id, res);
       const user = await newUser.save();
-      // console.log(user);
       const newProfile = new UserProfile({
         user_id: user._id,
         name: name,
@@ -43,56 +51,66 @@ export const register = async (req, res) => {
         role: role,
       });
       await newProfile.save();
-      return  res.status(201).json({
-        success: true,
-        status: 201,
-        message: "Registration successfull",
-        data:{
-          accessToken: access_token,
-          refreshToken: refresh_token
-        }
-      });
+      return new Response(res, true, 201, "Registration successfull", { access_token: access_token, refresh_token: refresh_token }).successs();
+
     } else {
-      return res.status(400).json({ 
-        success: false,
-        status: 400,
-        message:"Registration failed",
-      });
+      return new Response(
+        res,
+        false,
+        400,
+        "Registration failed",
+        // error
+      ).errorFun();
+
     }
   } catch (error) {
     console.error("Error:", error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    return new Response(
+      res,
+      false,
+      500,
+      "Internal Server Error",
+      // error
+    ).errorFun();
   }
 };
 export const login = async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email });
-    if (!user) res.status(401).json({ 
-      success: true,
-      status: 401,
-      message: "Invalid Credentials"
-    });
+    if (!user) return new Response(
+      res,
+      true,
+      401,
+      "Invalid Credentials",
+      // error
+    ).errorFun();
+
     const isPasswordCorrect = await bcrypt.compare(password, user.password);
     if (!isPasswordCorrect)
-      return res.status(401).json({
-      success: true,
-      status: 401,
-      message: "Invalid Credentials"
-    });
+      return new Response(
+        res,
+        true,
+        401,
+        "Invalid Credentials",
+        // error
+      ).errorFun();
+
     const { access_token, refresh_token } = generateToken(user._id, res);
-    return res.status(200).json({
-      success: true,
-      status: 200,
-      message: "Login successfull",
-      data:{
-        accessToken: access_token,
-        refreshToken: refresh_token
-      }
-    });
+    return new Response(
+      res, true, 200, "Login successfull", { access_token: access_token, refresh_token: refresh_token }
+    ).successs();
+
+
   } catch (error) {
     console.error("Error:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    return new Response(
+      res,
+      false,
+      500,
+      "Internal Server Error",
+      // error
+    ).errorFun();
   }
 };
 
@@ -101,13 +119,18 @@ export const logout = (req, res) => {
     res.cookie("jwt", "", { maxAge: 0 });
     res.cookie("access_token", "", { maxAge: 0 });
     res.cookie("refresh_token", "", { maxAge: 0 });
-    return res.status(200).json({ 
-      success: true,
-      status: 200,
-      message: "Logout successfull"
-     });
+    return new Response(
+      res, true, 200, "Logout successfull"
+    ).successs();
+
   } catch (error) {
-    return res.status(400).json({ message: error });
+    return new Response(
+      res,
+      false,
+      400,
+      "invalid request",
+      // error
+    ).errorFun();
   }
 };
 const sendResetPasswordEmail = async (name, email, token) => {
@@ -122,7 +145,6 @@ const sendResetPasswordEmail = async (name, email, token) => {
         pass: process.env.EMAIL_PASSWORD,
       },
     });
-    console.log(transporter);
 
     const mailOptions = {
       from: "app.testplatform123@gmail.com",
@@ -138,7 +160,13 @@ const sendResetPasswordEmail = async (name, email, token) => {
       }
     });
   } catch (error) {
-    return res.status(400).json({ message: error });
+    return new Response(
+      res,
+      false,
+      400,
+      "invalid request",
+      // error
+    ).errorFun();
   }
 };
 
@@ -153,14 +181,30 @@ export const forget_password = async (req, res) => {
         { $set: { token: randomstr } }
       );
       sendResetPasswordEmail(userData.name, userData.email, randomstr);
-      return res
-        .status(200)
-        .json({ message: "Please check your mail and reset password" });
+      return new Response(
+        res,
+        true,
+        200,
+        "Please check your mail and reset password",
+        // error
+      ).success();
     } else {
-      return res.status(200).json({ message: "Email Already Exists" });
+      return new Response(
+        res,
+        true,
+        200,
+        "Email Already Exists",
+        // error
+      ).errorFun();
     }
   } catch (error) {
-    return res.status(400).json({ message: error.message });
+    return new Response(
+      res,
+      false,
+      400,
+      error.message,
+      // error
+    ).errorFun();
   }
 };
 
@@ -180,12 +224,26 @@ export const reset_password = async (req, res) => {
         { new: true }
       );
       const access_token = generateToken(userData._id, res);
-      return res.status(200).json({ access_token: access_token });
+      return new Response(
+        res, true, 200, "Password reset successful", { access_token: access_token }
+      ).successs();
     } else {
-      return res.status(400).json({ msg: "This link has been expired" });
+      return new Response(
+        res,
+        false,
+        400,
+        "Failed to reset password",
+        // error
+      ).errorFun();
     }
   } catch (error) {
-    return res.status(500).json({ msg: error });
+    return new Response(
+      res,
+      false,
+      500,
+      "Internal Server Error",
+      // error
+    ).errorFun();
   }
 };
 
@@ -196,16 +254,26 @@ export const refreshToken = async (req, res) => {
     const user = await User.findById(decode.userID);
     if (user) {
       const { access_token, refresh_token } = generateToken(user._id, res);
-      res.status(201).json({
-        data: {
-          access_token: access_token,
-          refresh_token: refresh_token,
-        },
-      });
+      return new Response(
+        res, true, 201, "Password reset successful", { access_token: access_token, refresh_token: refresh_token }
+      ).successs();
+
     } else {
-      return res.status(400).json({ message: "RefreshToken Expired" });
+      return new Response(
+        res,
+        false,
+        400,
+        "RefreshToken Expired",
+        // error
+      ).errorFun();
     }
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
+    return new Response(
+      res,
+      false,
+      500,
+      "Internal Server Error",
+      // error
+    ).errorFun();
   }
 };

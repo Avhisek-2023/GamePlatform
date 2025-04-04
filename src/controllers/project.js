@@ -15,18 +15,22 @@ export const createProject = async (req, res) => {
         developerID: user_id,
       };
 
+
       if (!uuidValidate(projectObject.projectID)) {
-        return res.status(400).json({
-          error: {
-            message: "UUID is not valid",
-            success: false,
-            status: 400,
-          },
-        });
+
+        return new Response(
+          res,
+          false,
+          400,
+          "UUID is not valid",
+          // error
+        ).errorFun();
+
       } else {
         const project = await Project.create(projectObject);
+        // console.log(project);
 
-        return new Response(res, true, "Project created successfully", {
+        return new Response(res, true, 201, "Project created successfully", {
           projectId: project.projectID,
           developerID: project.developerID,
           gameName: project.projectID,
@@ -37,11 +41,14 @@ export const createProject = async (req, res) => {
       }
     }
   } catch (error) {
+    console.log(error);
+
     return new Response(
       res,
       false,
+      400,
       "Error in creating project",
-      error
+      // error
     ).errorFun();
   }
 };
@@ -58,7 +65,7 @@ export const uploadProject = async (req, res) => {
       project.projectFilePath = filePath(projectID);
       await project.save();
       upload(file, projectID, projectName, res);
-      return new Response(res, true, "Project Uploaded successfully", {
+      return new Response(res, true, 201, "Project Uploaded successfully", {
         projectId: project.projectID,
         developerID: project.developerID,
         gameName: project.projectID,
@@ -68,16 +75,23 @@ export const uploadProject = async (req, res) => {
         projectFilePath: project.projectFilePath,
       }).successs();
     } else {
-      return res
-        .status(400)
-        .json({ success: false, message: "Project not found" });
+      return new Response(
+        res,
+        false,
+        400,
+        "Project not found",
+        // error
+      ).errorFun();
     }
   } catch (error) {
+    console.log(error);
+
     return new Response(
       res,
       false,
+      400,
       "Error in uploading project",
-      error
+      // error
     ).errorFun();
   }
 };
@@ -92,15 +106,19 @@ export const getAllProject = async (req, res) => {
     return new Response(
       res,
       true,
+      200,
       "Project Retrieved Successfully",
       projects
     ).successs();
   } catch (error) {
+    console.log(error);
+
     return new Response(
       res,
       false,
+      404,
       "Error in retrieving project",
-      error
+      // error
     ).errorFun();
   }
 };
@@ -111,15 +129,19 @@ export const getDeveloperProject = async (req, res) => {
     return new Response(
       res,
       true,
+      200,
       "Project Retrieved Successfully",
       projects
     ).successs();
   } catch (error) {
+    console.log(error);
+
     return new Response(
       res,
       false,
+      404,
       "Error in retrieving project",
-      error
+      // error
     ).errorFun();
   }
 };
