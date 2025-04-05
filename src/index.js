@@ -23,12 +23,13 @@ app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 const PORT = process.env.PORT;
 const DB_URL = process.env.DB_URL;
+console.log(DB_URL);
 
-app.use(cors());
+// app.use(cors());
 
-app.get('/',(req,res)=>{
+app.get('/', (req, res) => {
   return res.status(200).json({
-    message:"accounts"
+    message: "accounts"
   })
 });
 
@@ -38,13 +39,13 @@ app.listen(PORT, () => {
 });
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
-app.use("/api",uploadRoutes)
+app.use("/api", uploadRoutes)
 
 
 mongoose
   .connect(DB_URL)
   .then(() => {
     console.log("Db connected");
-   
+
   })
   .catch((error) => console.log(error));
