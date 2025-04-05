@@ -1,0 +1,5 @@
+node_modules
+.history
+.env
+src/swagger.js
+public/uploads/**
