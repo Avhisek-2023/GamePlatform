@@ -3,7 +3,8 @@ import fs from "fs";
 import path from "path";
 export const upload = async (file, projectId, projectName, res) => {
   const zipFilePath = file.path;
-  const extractPath = path.join("public/uploads", `${projectId}`);
+  console.log(file.path,'file path');
+  const extractPath = path.join("/app/games", `${projectId}`);
 
   try {
     fs.mkdirSync(extractPath, { recursive: true });

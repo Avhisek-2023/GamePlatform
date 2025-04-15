@@ -97,8 +97,10 @@ export const uploadProject = async (req, res) => {
 };
 
 const filePath = (projectID, projectName) => {
-  return `public/uploads/${projectID}`;
+  return `http://103.91.187.117/games/uploads/${projectID}`;
 };
+
+
 
 export const getAllProject = async (req, res) => {
   try {
