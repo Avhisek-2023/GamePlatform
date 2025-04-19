@@ -1,8 +1,6 @@
-
-
 services:
   mongo_db:
-    container_name: mongo_db_container
+    container_name: mongo_db
     image: mongo:4.4
     restart: always
     volumes:
@@ -12,15 +10,15 @@ services:
     container_name: express_api_container
     build: .
     ports:
-      - 5000:8008
+      - 5001:8008
     environment:
       PORT: 8008
       MONGODB_URI: mongodb://mongo_db:27017
-      DB_NAME: wishdeveloperdb
+      DB_NAME: gameplatform
       NAME: GameDeveloper
       JWT_SECRET: abcdefghijklmnopqrstuvwxyz1234567890
-    depends_on:
-      - mongo_db
+    volumes:
+      - /var/www/html/games:/app/games
 
 volumes:
   mongo_db: {}

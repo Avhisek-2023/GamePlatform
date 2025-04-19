@@ -10,7 +10,7 @@ import {
   uploadProject,
 } from "../controllers/project.js";
 
-const projectDist = multer({ dest: "public/uploads/" });
+const projectDist = multer({ dest: "/app/games" });
 
 const router = express.Router();
 
