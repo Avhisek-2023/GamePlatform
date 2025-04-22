@@ -3,8 +3,7 @@ import fs from "fs";
 import path from "path";
 export const upload = async (file, projectId, projectName, res) => {
   const zipFilePath = file.path;
-  console.log(file.path,'file path');
-  const extractPath = path.join("/app/games", `${projectId}`);
+  const extractPath = path.join(`/home/priyanshuchourasia/games`);
 
   try {
     fs.mkdirSync(extractPath, { recursive: true });
@@ -19,7 +18,7 @@ export const upload = async (file, projectId, projectName, res) => {
       })
       .on("error", (err) => {
         res.status(500).json({ message: err });
-      });
+    });
   } catch (err) {
     res.status(500).json({ message: err });
   }

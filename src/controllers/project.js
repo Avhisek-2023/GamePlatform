@@ -62,7 +62,8 @@ export const uploadProject = async (req, res) => {
       project.projectName = projectName;
       project.genre = genre;
       project.description = description;
-      project.projectFilePath = filePath(projectID);
+      const projectFilePath = file.originalname.substr(0,file.originalname.lastIndexOf('.'));
+      project.projectFilePath = filePath(projectID,projectFilePath);
       await project.save();
       upload(file, projectID, projectName, res);
       return new Response(res, true, 201, "Project Uploaded successfully", {
@@ -97,7 +98,7 @@ export const uploadProject = async (req, res) => {
 };
 
 const filePath = (projectID, projectName) => {
-  return `http://103.91.187.117/games/uploads/${projectID}`;
+  return `https://game-${projectName}-${projectID}.wishalpha.com/`;
 };
 
 
