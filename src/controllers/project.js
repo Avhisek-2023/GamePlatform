@@ -18,17 +18,14 @@ export const createProject = async (req, res) => {
         developerID: user_id,
       };
 
-
       if (!uuidValidate(projectObject.projectID)) {
-
         return new Response(
           res,
           false,
           400,
-          "UUID is not valid",
+          "UUID is not valid"
           // error
         ).errorFun();
-
       } else {
         const project = await Project.create(projectObject);
         // console.log(project);
@@ -50,7 +47,7 @@ export const createProject = async (req, res) => {
       res,
       false,
       400,
-      "Error in creating project",
+      "Error in creating project"
       // error
     ).errorFun();
   }
@@ -97,7 +94,7 @@ export const uploadProject = async (req, res) => {
         res,
         false,
         400,
-        "Project not found",
+        "Project not found"
         // error
       ).errorFun();
     }
@@ -108,7 +105,7 @@ export const uploadProject = async (req, res) => {
       res,
       false,
       400,
-      "Error in uploading project",
+      "Error in uploading project"
       // error
     ).errorFun();
   }
@@ -117,8 +114,6 @@ export const uploadProject = async (req, res) => {
 const filePath = (projectID, projectName) => {
   return `https://game-${projectID}-${projectName}.wishalpha.com/`;
 };
-
-
 
 export const getAllProject = async (req, res) => {
   try {
@@ -137,7 +132,7 @@ export const getAllProject = async (req, res) => {
       res,
       false,
       404,
-      "Error in retrieving project",
+      "Error in retrieving project"
       // error
     ).errorFun();
   }
@@ -160,7 +155,7 @@ export const getDeveloperProject = async (req, res) => {
       res,
       false,
       404,
-      "Error in retrieving project",
+      "Error in retrieving project"
       // error
     ).errorFun();
   }

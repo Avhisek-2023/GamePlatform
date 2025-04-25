@@ -6,6 +6,8 @@ export const upload = async (file, projectId, projectName, res) => {
   const zipFilePath = file.path;
   const fileNameWithoutExt = path.basename(file.originalname, path.extname(file.originalname));
   const extractPath = path.join("/app/games", fileNameWithoutExt);
+  console.log(file.path, "file path");
+  const extractPath = path.join("/app/games", `${projectId}`);
 
   try {
     fs.mkdirSync(extractPath, { recursive: true });
