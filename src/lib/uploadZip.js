@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 export const upload = async (file, projectId, projectName, res) => {
   const zipFilePath = file.path;
-  console.log(file.path,'file path');
+  console.log(file.path, "file path");
   const extractPath = path.join("/app/games", `${projectId}`);
 
   try {
