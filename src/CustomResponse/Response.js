@@ -15,7 +15,6 @@ export class Response {
     this.error = error;
   }
   successs() {
-    console.log("In");
     return this.res
       .status(201)
       .json({ success: this.success, status: this.status, message: this.message, data: this.data });

@@ -2,10 +2,11 @@ import { Response } from "../CustomResponse/Response.js";
 import UserProfile from "../models/userprofile.js";
 import User from "../models/users.js";
 import bcrypt from "bcryptjs";
+
+// Get all users
 export const getAllUsers = async (req, res) => {
   try {
     const allUser = await User.find();
-    console.log(allUser);
     return new Response(
       res,
       true,

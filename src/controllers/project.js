@@ -3,6 +3,9 @@ import { upload } from "../lib/uploadZip.js";
 import Project from "../models/project.js";
 import { validate as uuidValidate } from "uuid";
 import { v7 as uuidv7 } from "uuid";
+import path from "path";
+import fs from "fs";
+
 export const createProject = async (req, res) => {
   try {
     const projectUUID = uuidv7();
@@ -53,14 +56,29 @@ export const createProject = async (req, res) => {
 export const uploadProject = async (req, res) => {
   try {
     const file = req.file;
+
     const { projectID, projectName, genre, description } = req.body;
     const project = await Project.findOne({ projectID });
     if (project) {
       project.projectName = projectName;
       project.genre = genre;
       project.description = description;
-      project.projectFilePath = filePath(projectID);
+      const projectFilePath = file.originalname.substr(0,file.originalname.lastIndexOf('.'));
+      project.projectFilePath = filePath(projectID,projectFilePath);
       await project.save();
+
+      const oldPath = file.path;
+      const ext = path.extname(file.originalname);
+      const base = path.basename(file.originalname,ext);
+      const newFilename = `${projectID}-${base}${ext}`;
+      const newPath = path.join(file.destination,newFilename);
+
+      fs.renameSync(oldPath,newPath);
+      file.originalname = newFilename;
+      file.path = newPath;
+      file.filename = newFilename;
+
+
       upload(file, projectID, projectName, res);
       return new Response(res, true, 201, "Project Uploaded successfully", {
         projectId: project.projectID,
@@ -94,7 +112,7 @@ export const uploadProject = async (req, res) => {
 };
 
 const filePath = (projectID, projectName) => {
-  return `http://103.91.187.117/games/uploads/${projectID}`;
+  return `https://game-${projectID}-${projectName}.wishalpha.com/`;
 };
 
 export const getAllProject = async (req, res) => {
