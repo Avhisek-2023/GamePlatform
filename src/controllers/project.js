@@ -81,7 +81,7 @@ export const uploadProject = async (req, res) => {
 
       upload(file, projectID, projectName, res);
       return new Response(res, true, 201, "Project Uploaded successfully", {
-        projectId: project.projectID,
+        projectID: project.projectID,
         developerID: project.developerID,
         gameName: project.projectID,
         genre: project.genre,

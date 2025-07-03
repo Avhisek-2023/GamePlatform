@@ -16,6 +16,7 @@ const gameSessionSchema = new mongoose.Schema(
     },
     endedAt: {
       type: Date,
+      default: null
     },
     status: {
       type: String,
@@ -24,6 +25,7 @@ const gameSessionSchema = new mongoose.Schema(
     },
     score: {
       type: Number,
+      default: null,
     },
     result: {
       type: String,

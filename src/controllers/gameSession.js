@@ -1,42 +1,43 @@
-import GameSession from "../models/gameSession";
+import { Response } from "../CustomResponse/Response.js";
+import GameSession from "../models/gameSession.js";
 
-export const saveSessionInitials = async (req, res) => {
+export const createSession = async (req,res)=>{
   try {
-    const { projectID } = req.body;
-    const userID = req.user.userID;
-
-    const newSession = new GameSession({
+    const{projectID}=req.body;
+    const userID=req.user.userID;
+    console.log(projectID,userID);
+    const newSession=new GameSession({
       projectID,
-      userID,
+      userID
     });
-
-    const savedSession = await newSession.save();
+    const savedSession=await newSession.save();
+    console.log(savedSession);
+    
     return new Response(
       res,
       true,
       201,
       "Game session started.",
-      savedSession,
-      null
+      savedSession
     ).successs();
+    
   } catch (error) {
     return new Response(
       res,
       false,
       500,
       "Failed to start game session.",
-      null,
       error.message
     ).errorFun();
   }
-};
+}
 
-export const saveSessionFinals = async (req, res) => {
+export const updateSession = async (req, res) => {
   try {
-    const { sessionId, score, result, status } = req.body;
+    const { sessionID, score, result, status } = req.body;
 
     const updatedSession = await GameSession.findByIdAndUpdate(
-      sessionId,
+      sessionID,
       {
         endedAt: new Date(),
         score,
@@ -45,6 +46,7 @@ export const saveSessionFinals = async (req, res) => {
       },
       { new: true }
     );
+   console.log(updatedSession);
 
     if (!updatedSession) {
       return new Response(
@@ -53,7 +55,6 @@ export const saveSessionFinals = async (req, res) => {
         404,
         "Game session not found.",
         null,
-        null
       ).errorFun();
     }
 
@@ -63,7 +64,7 @@ export const saveSessionFinals = async (req, res) => {
       200,
       "Game session updated successfully.",
       updatedSession,
-      null
+
     ).successs();
   } catch (error) {
     return new Response(
@@ -71,8 +72,28 @@ export const saveSessionFinals = async (req, res) => {
       false,
       500,
       "Failed to update game session.",
-      null,
       error.message
     ).errorFun();
   }
 };
+
+export const getAllSession= async(req,res)=>{
+  try {
+    const allSessions = await GameSession.find();
+    return new Response(
+      res,
+      true,
+      200,
+      "Session fetched successfully",
+      allSessions
+    ).successs();
+
+  } catch (error) {
+    return new Response(
+      res,
+      false,
+      400,
+      error.message,
+    ).errorFun();
+  }
+}

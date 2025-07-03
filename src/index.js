@@ -7,6 +7,8 @@ import uploadRoutes from "./routes/projectRoutes.js"
 import swaggerUi from "swagger-ui-express";
 import swaggerDocument from "./swagger-output.json" with { type: "json" };
 import appMiddleware from "./middlewares/index.js";
+import sessionRoutes from"./routes/gameSessionRoutes.js";
+import cors from "cors";
 
 dotenv.config();
 
@@ -18,9 +20,9 @@ appMiddleware(app);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 const PORT = process.env.PORT;
-const DB_URL = process.env.DB_URL;
+const DB_URL = "mongodb://localhost:27017/gameplatform" ;
 
-// app.use(cors());
+app.use(cors());
 
 app.get('/', (req, res) => {
   return res.status(200).json({
@@ -35,7 +37,8 @@ app.listen(PORT, () => {
 });
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
-app.use("/api", uploadRoutes)
+app.use("/api", uploadRoutes);
+app.use("/api",sessionRoutes);
 
 
 mongoose

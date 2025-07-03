@@ -1,24 +1,27 @@
 import express from "express";
 import { authorizeRoles } from "../middlewares/roleMiddleware.js";
 import { verifyToken } from "../middlewares/authMiddleware.js";
-import {
-  saveSessionFinals,
-  saveSessionInitials,
-} from "../controllers/gameSession.js";
+import { createSession, getAllSession, updateSession } from "../controllers/gameSession.js";
 
 const router = express.Router();
 
 router.post(
-  "/startGame",
+  "/session/startGame",
   verifyToken,
   authorizeRoles("admin", "developer", "user"),
-  saveSessionInitials
+  createSession
 );
-router.post(
-  "/endGame",
+router.put(
+  "/session/endGame",
   verifyToken,
   authorizeRoles("admin", "developer", "user"),
-  saveSessionFinals
+  updateSession
+);
+router.get(
+  "/sessions",
+  verifyToken,
+  authorizeRoles("admin", "developer", "user"),
+  getAllSession
 );
 
 export default router;
