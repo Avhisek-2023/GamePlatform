@@ -22,6 +22,8 @@ export const register = async (req, res) => {
 
     }
     const user = await User.findOne({ email });
+    console.log(user);
+    
     if (user) return new Response(
       res,
       true,

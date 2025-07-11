@@ -12,7 +12,7 @@ const config = {
   // bail: 0,
 
   // The directory where Jest should store its cached dependency information
-  // cacheDirectory: "C:\\Users\\Abhishek\\AppData\\Local\\Temp\\jest",
+  // cacheDirectory: "C:\\Users\\Soham Saha\\AppData\\Local\\Temp\\jest",
 
   // Automatically clear mock calls, instances, contexts and results before every test
   clearMocks: true,
@@ -77,7 +77,18 @@ const config = {
   // ],
 
   // An array of file extensions your modules use
-  moduleFileExtensions: ["js", "json", "node"],
+  moduleFileExtensions: [
+    "js",
+    "mjs",
+    "cjs",
+    "jsx",
+    "ts",
+    "mts",
+    "cts",
+    "tsx",
+    "json",
+    "node"
+  ],
 
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   // moduleNameMapper: {},
@@ -145,7 +156,10 @@ const config = {
   // testLocationInResults: false,
 
   // The glob patterns Jest uses to detect test files
-  testMatch: ["**/__tests__/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[tj]s?(x)"],
+  testMatch: [
+    "**/__tests__/**/*.?([mc])[jt]s?(x)",
+    "**/?(*.)+(spec|test).?([mc])[jt]s?(x)"
+  ],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
   // testPathIgnorePatterns: [
@@ -162,7 +176,7 @@ const config = {
   // testRunner: "jest-circus/runner",
 
   // A map from regular expressions to paths to transformers
-  // transform: {},
+  // transform: undefined,
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
   // transformIgnorePatterns: [
